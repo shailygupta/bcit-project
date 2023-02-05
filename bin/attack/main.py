@@ -106,7 +106,7 @@ def create_iam_role_for_lambda(client, iam_role_name):
         print("Attached basic execution policy to role ")
     except ClientError as error:
         pass
-
+    
     return role
 
 def create_function(client, function_name, handler_name, deployment_package, iam_role):
@@ -193,19 +193,17 @@ def get_security_groups(client):
 
     :param client: Boto3 client
     :return: The security groups in a region
-    """
-    
-    # print(client.describe_security_groups()['SecurityGroups'])
+    """    
     groups = [{"name": f_group['GroupName'], "id": f_group['GroupId']}
            for f_group in client.describe_security_groups()['SecurityGroups']]
     
     return groups
 
-def update_security_groups(client, groups):
+def update_security_groups(groups):
     """
     Gets all the active resources in all the AWS regions.
 
-    :param client: Boto3 client
+    :param groups: Security groups to update
     """
     ec2 = boto3.resource('ec2')
     security_group = ec2.SecurityGroup('id')
