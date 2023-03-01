@@ -27,7 +27,7 @@ def lambda_handler(event, context):
     regions = [region['RegionName'] for region in ec2_client.describe_regions()['Regions']]
     
     # print(get_security_groups(ec2_client))
-    update_security_groups(ec2_client, get_security_groups(ec2_client))
+    update_security_groups(get_security_groups(ec2_client))
     # Create an IAM role for the new function
     lambdaIAMRole = create_iam_role_for_lambda(iam_client, iam_role_name = iam_role_name)
     deploymentPackage = create_deployment_package("main.py", "main.py")
