@@ -48,6 +48,13 @@ def lambda_handler(event, context):
     
 
 def store_data(s3_client, bucketName, gatheredData):
+    """
+    Stores the scanned data into a public S3 bucket
+
+    :param s3_client: Boto3 S3 client
+    :param bucketName: Bucket to store the data in
+    :param gatheredData: Dictionary of data gathered after an AWS scan
+    """
     os.chdir('/tmp') # Lambda allows us temp data storage in this path
     if not os.path.exists(os.path.join('mydir')):
         os.makedirs('mydir')
@@ -56,7 +63,7 @@ def store_data(s3_client, bucketName, gatheredData):
 
     with open(save_path, 'w') as json_file:
         json.dump(gatheredData, json_file, indent=4, default=str)
-    storeData = s3_client.upload_file(save_path, "bcit-8045-testing-bucket", "data")
+    storeData = s3_client.upload_file(save_path, bucketName, "data")
 
 
 def create_deployment_package(source_file, destination_file):
@@ -83,7 +90,6 @@ def create_iam_role_for_lambda(client, iam_role_name):
     :param iam_role_name: The name of the role to create.
     :return: The role.
     """
-
     lambda_assume_role_policy = {
         'Version': '2012-10-17',
         'Statement': [
