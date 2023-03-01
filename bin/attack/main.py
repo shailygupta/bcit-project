@@ -1,3 +1,6 @@
+# Author: Shaily Gupta
+# Purpose: BCIT COMP8045
+# Student ID: A00952989
 # Query AWS resources in all regions
 # Add all the resource into a dictionary and upload it to a S3 bucket
 # If there are any EC2 instances, create a new SG to allow SSH access from the world and add it to the instances

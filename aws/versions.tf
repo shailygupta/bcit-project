@@ -1,3 +1,7 @@
+// Author: Shaily Gupta
+// Purpose: BCIT COMP8045
+// Student ID: A00952989
+
 terraform {
   required_providers {
     aws = {
